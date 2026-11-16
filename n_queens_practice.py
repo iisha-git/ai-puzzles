@@ -1,37 +1,41 @@
 n = 8
 
-def solve(row, queens, solutions):
+col = []
+posDiag = []
+negDiag = []
 
-    if row == n:
-        solutions.append(queens.copy())
+res = []
+board = [["."] * n for i in range(n)]
+
+def backtrack(r):
+
+    if r == n:
+        copy = ["".join(row) for row in board]
+        res.append(copy)
         return
 
-    for col in range(n):
+    for c in range(n):
 
-        if all(col != c and abs(col-c) != row-r
-               for r, c in enumerate(queens)):
+        if c in col or (r + c) in posDiag or (r - c) in negDiag:
+            continue
 
-            queens.append(col)
+        col.append(c)
+        posDiag.append(r + c)
+        negDiag.append(r - c)
 
-            solve(row+1, queens, solutions)
+        board[r][c] = "Q"
 
-            queens.pop()
+        backtrack(r + 1)
 
+        col.remove(c)
+        posDiag.remove(r + c)
+        negDiag.remove(r - c)
+        board[r][c] = "."
 
-def print_board(solution):
+backtrack(0)
 
-    for row in range(n):
-        print(" ".join(
-            "Q" if solution[row] == col else "."
-            for col in range(n)
-        ))
-
-
-queens = []
-solutions = []
-
-solve(0, queens, solutions)
-
-print("Number of solutions:", len(solutions))
+print("Number of solutions:", len(res))
 print("First solution:")
-print_board(solutions[0])
+
+for row in res[0]:
+    print(row)
