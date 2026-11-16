@@ -1,48 +1,37 @@
-N = 8
+n = 8
 
-def solve_queens():
-    positions = [-1] * N
-    solutions = []
+def solve(row, queens, solutions):
 
-    def backtrack(col):
-        if col == N:
-            solutions.append(positions.copy())
-            return
+    if row == n:
+        solutions.append(queens.copy())
+        return
 
-        for row in range(N):
-            safe = True
+    for col in range(n):
 
-            for previous_col in range(col):
-                previous_row = positions[previous_col]
+        if all(col != c and abs(col-c) != row-r
+               for r, c in enumerate(queens)):
 
-                if (previous_row == row or
-                    abs(previous_row - row) == abs(previous_col - col)):
-                    safe = False
-                    break
+            queens.append(col)
 
-            if safe:
-                positions[col] = row
+            solve(row+1, queens, solutions)
 
-                backtrack(col + 1)
-
-                positions[col] = -1
-
-    backtrack(0)
-    return solutions
+            queens.pop()
 
 
 def print_board(solution):
-    for row in range(N):
+
+    for row in range(n):
         print(" ".join(
-            "Q" if solution[col] == row else "."
-            for col in range(N)
+            "Q" if solution[row] == col else "."
+            for col in range(n)
         ))
 
 
-if __name__ == "__main__":
-    all_solutions = solve_queens()
+queens = []
+solutions = []
 
-    print("Number of solutions:", len(all_solutions))
+solve(0, queens, solutions)
 
-    print("First solution:")
-    print_board(all_solutions[0])
+print("Number of solutions:", len(solutions))
+print("First solution:")
+print_board(solutions[0])
